@@ -117,6 +117,10 @@ sample$CompressiveStrength <- NULL
 
 predict.sample <- predict(model.rf, sample, predict.all = TRUE)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Calculate the 95% confidence interval for the prediction based on the user's
+# input values.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 predict.sample.int <- apply( predict.sample$individual, 1, function(x) {
         c( quantile(x, c(0.025)),
            mean(x),
@@ -125,10 +129,18 @@ predict.sample.int <- apply( predict.sample$individual, 1, function(x) {
 
 predict.sample.int
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Set up a dataframe containing the maximum and minimum column values as rows
+# 1 and 2, and the values the users inputs for prediction as row 3.  This format
+# is required by radarchart (below) to format the plot properly.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 plot.data <- rbind(colMaxs(as.matrix(concrete)),
                    colMins(as.matrix(concrete)),
                    sample)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plot the user-input values on a radar chart.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 radarchart(plot.data,
            maxmin = TRUE,
            centerzero = TRUE,
