@@ -4,10 +4,12 @@
 # Import required libraries
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 suppressMessages(library(ggplot2))       # General plotting functions
+suppressMessages(library(fmsb))          # Radar/spider plotting
 suppressMessages(library(doParallel))    # Parallel processing
 suppressMessages(library(caret))         # Machine learning
 suppressMessages(library(AppliedPredictiveModeling)) # Concrete data set
 suppressMessages(library(randomForest))  # Machine learning
+suppressMessages(library(Metrics))       # Performance measures
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Register parallel backend
@@ -71,7 +73,34 @@ predictions <- predict(model)
 plot(concrete$CompressiveStrength, residuals)
 plot(predictions, residuals)
 plot(concrete$CompressiveStrength, predictions)
-     
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Retrain model using randomForest package w/o caret (for use on shiny.io)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+model.rf <- randomForest(CompressiveStrength ~ .
+               ,data = training
+               ,xtest = testing[, 1:8]
+               ,ytest = testing$CompressiveStrength
+               ,mtry = 6
+               ,ntree = 750
+               ,importance = TRUE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Performance plots
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+predictions.rf <- predict(model.rf, concrete, predict.all = TRUE)
+residuals.rf <- concrete$CompressiveStrength - predictions.rf
+plot(concrete$CompressiveStrength, residuals.rf)
+plot(predictions.rf, residuals.rf)
+plot(concrete$CompressiveStrength, predictions.rf)
+varImpPlot(model.rf, type = 1, scale = TRUE)
+
+pred.rf.int <- apply( predictions.rf$individual, 1, function(x) {
+        c( quantile(x, c(0.025)),
+           mean(x),
+           quantile(x, c(0.975)) )
+        })
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Predict compressive strength using example parameters
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,3 +114,27 @@ sample$CoarseAggregate <- 855.0
 sample$FineAggregate <- 800.0
 sample$Age <- 14.00
 sample$CompressiveStrength <- NULL
+
+predict.sample <- predict(model.rf, sample, predict.all = TRUE)
+
+predict.sample.int <- apply( predict.sample$individual, 1, function(x) {
+        c( quantile(x, c(0.025)),
+           mean(x),
+           quantile(x, c(0.975)) )
+})
+
+predict.sample.int
+
+plot.data <- rbind(colMaxs(as.matrix(concrete)),
+                   colMins(as.matrix(concrete)),
+                   sample)
+
+radarchart(plot.data,
+           maxmin = TRUE,
+           centerzero = TRUE,
+           pfcol = c(5),
+           pcol = c(4),
+           pty = c(16),
+           plty = c(7),
+           cglcol = 'red',
+           title = 'Current Concrete Composition Selection')
