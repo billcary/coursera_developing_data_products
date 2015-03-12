@@ -3,24 +3,23 @@
 # Import required libraries
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 library(shiny)
-suppressMessages(library(ggplot2))       # General plotting functions
 suppressMessages(library(fmsb))          # Radar/spider plotting
-suppressMessages(library(doParallel))    # Parallel processing
 suppressMessages(library(caret))         # Machine learning
 suppressMessages(library(AppliedPredictiveModeling)) # Concrete data set
 suppressMessages(library(randomForest))  # Machine learning
-suppressMessages(library(Metrics))       # Performance measures
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cat('hello')
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Read the data into R
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 data("concrete")
 
 data <- concrete
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Holdout 20% of data for testing estimates
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set.seed(107)
 inTrain <- createDataPartition(y = concrete$CompressiveStrength,
                                p = 0.80,
@@ -29,9 +28,9 @@ inTrain <- createDataPartition(y = concrete$CompressiveStrength,
 training <- concrete[inTrain,]
 testing <- concrete[-inTrain,]
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Train the model
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set.seed(300)
 
 model.rf <- randomForest(CompressiveStrength ~ .
@@ -43,29 +42,34 @@ model.rf <- randomForest(CompressiveStrength ~ .
                          ,importance = TRUE
                          ,keep.forest = TRUE)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Performance plots
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-predictions.rf <- predict(model.rf, data, predict.all = TRUE)
-residuals.rf <- concrete$CompressiveStrength - predictions.rf
+cat(summary(model.rf))
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Provide initial values for the user input sliders
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sample <- data.frame(Cement = 293.0,
-                     BlastFurnaceSlag = 6.5,
-                     FlyAsh = 94.0,
-                     Water = 200.0,
-                     Superplasticizer = 16.1,
-                     CoarseAggregate = 855.0,
-                     FineAggregate = 800.0,
-                     Age = 14.0)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Performance plots
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+predictions.rf <- predict(model.rf, concrete, predict.all = TRUE)
+
+cat(predictions.rf$aggregate)
+
+residuals.rf <- concrete$CompressiveStrength - predictions.rf$aggregate
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ShinyServer function
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 shinyServer(
         function(input, output) {
+                
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                # Provide initial values for the user input sliders
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                sample <- data.frame(Cement = 293.0,
+                                     BlastFurnaceSlag = 6.5,
+                                     FlyAsh = 94.0,
+                                     Water = 200.0,
+                                     Superplasticizer = 16.1,
+                                     CoarseAggregate = 855.0,
+                                     FineAggregate = 800.0,
+                                     Age = 14.0)
                 
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # Overall Model Performance plots
