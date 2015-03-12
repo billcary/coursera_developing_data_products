@@ -4,7 +4,8 @@ library(shiny)
 shinyUI(navbarPage("Predicting compressive strength of concrete mixtures",
                    inverse = TRUE, collapsable = FALSE, fluid = TRUE, responsive = TRUE,
                    tabPanel("About App",
-                            fluidRow(includeHTML("AboutApp.html"))),
+                            #fluidRow(includeHTML("AboutApp.html"))
+                   ),
                    tabPanel("Predict", # Sidebar with a slider input for number of bins
                             sidebarLayout(
                                     sidebarPanel("Use sliders to choose the amount of each concrete component",
@@ -17,20 +18,24 @@ shinyUI(navbarPage("Predicting compressive strength of concrete mixtures",
                                                  sliderInput("fly.ash","Fly Ash (Kg/m^3)", 50, 80, 50, 0.5),
                                                  sliderInput("blast.furnace.slag","Blast Furnace Slag (Kg/m^3)", 50, 80, 50, 0.5),),
                                     mainPanel(            
-                                            verbatimTextOutput("predict"),
-                                            textOutput("text1"),
+                                            textOutput("output$prediction.text"),
+                                            textOutput("output$prediction.ci"),
+                                            textOutput("output$input.vals"),
                                             plotOutput("plot5")))),
                    navbarMenu("Model Performance",
                               tabPanel("Residuals vs. Actual Strength",   
                                        plotOutput("plot1")),
-                              tabPanel("Predicted Strength vs. Residuals",   
+                              tabPanel("Residuals vs. Predicted Strength",   
                                        plotOutput("plot2")),
-                              tabPanel("Actual Strength vs. Predicted Strength",   
+                              tabPanel("Predicted Strength vs. Actual Strength",   
                                        plotOutput("plot3")),
                               tabPanel("Variable Importance",   
-                                       plotOutput("plot4"))),
-                   tabPanel("About Stackloss", 
-                            fluidRow(includeHTML("AboutStackloss.html")))        
-                   
-))
+                                       plotOutput("plot4")),
+                              tabPanel("About Stackloss", 
+                                       #fluidRow(includeHTML("AboutStackloss.html"))
+                              )        
+                              
+                   )
+)
+)
 

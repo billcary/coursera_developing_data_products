@@ -10,12 +10,13 @@ suppressMessages(library(caret))         # Machine learning
 suppressMessages(library(AppliedPredictiveModeling)) # Concrete data set
 suppressMessages(library(randomForest))  # Machine learning
 suppressMessages(library(Metrics))       # Performance measures
-diabetesRisk <- function(glucose) glucose / 200
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Read the data into R
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-data <- data("concrete")
+data("concrete")
+
+data <- concrete
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Holdout 20% of data for testing estimates
@@ -39,12 +40,13 @@ model.rf <- randomForest(CompressiveStrength ~ .
                          ,ytest = testing$CompressiveStrength
                          ,mtry = 6
                          ,ntree = 750
-                         ,importance = TRUE)
+                         ,importance = TRUE
+                         ,keep.forest = TRUE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Performance plots
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-predictions.rf <- predict(model.rf, concrete, predict.all = TRUE)
+predictions.rf <- predict(model.rf, data, predict.all = TRUE)
 residuals.rf <- concrete$CompressiveStrength - predictions.rf
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,19 +106,62 @@ shinyServer(
                 predict.sample <- predict(model.rf, sample, predict.all = TRUE)
                 
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                # Calculate the 95% confidence interval for the prediction based
+                # on the user's input values.
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                predict.sample.int <- apply( predict.sample$individual, 1, function(x) {
+                        c( quantile(x, c(0.025)),
+                           mean(x),
+                           quantile(x, c(0.975)) )
+                })
+                
+                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # Render outputs to screen
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # Render output prediction and confidence interval
+                output$prediction.text <- renderText({paste("Based on the chosen parameters,
+                                                  the predicted compressive strength
+                                                  is ", predict.sample.int[2], ".")
+                })
+                
+                output$prediction.ci <- renderText({paste("The confidence interval
+                                                          for the prediction is ",
+                                                          predict.sample.int[1],
+                                                          " to ", 
+                                                          predict.sample.int[3], ".")
+                })
                 
                 # Render user input values
+                output$input.vals <- renderText({paste("The selected input 
+                                                       values are as follows: ",
+                                                       sample)
+                })
+                
                 
                 # Render radar plot of user input values
-                
-                # Plot variable importance
-                output$plot4 <- renderPlot({
-                        varImpPlot(model.rf, type = 1, scale = TRUE)
+                output$plot5 <- renderPlot({
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        # Set up a dataframe containing the maximum and minimum
+                        # column values as rows 1 and 2, and the values the users
+                        # inputs for prediction as row 3.  This format is 
+                        # required by radarchart (below) to format the plot properly.
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        plot.data <- rbind(colMaxs(as.matrix(data)),
+                                           colMins(as.matrix(data)),
+                                           sample)
+                        
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        # Plot the user-input values on a radar chart.
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        radarchart(plot.data,
+                                   maxmin = TRUE,
+                                   centerzero = TRUE,
+                                   pfcol = c(5),
+                                   pcol = c(4),
+                                   pty = c(16),
+                                   plty = c(7),
+                                   cglcol = 'red',
+                                   title = 'Current Concrete Composition Selection')
                 })
-                output$inputValue <- renderPrint({input$glucose})
-                output$prediction <- renderPrint({diabetesRisk(input$glucose)})
-        }
+        })
 )
