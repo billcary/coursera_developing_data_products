@@ -11,20 +11,7 @@ shinyUI(fluidPage(
         # br() element to introduce extra vertical spacing
         sidebarLayout(
                 sidebarPanel(
-                        radioButtons("dist", "Distribution type:",
-                                     c("Normal" = "norm",
-                                       "Uniform" = "unif",
-                                       "Log-normal" = "lnorm",
-                                       "Exponential" = "exp")),
-                        br(),
-                        
-                        sliderInput("n", 
-                                    "Number of observations:", 
-                                    value = 500,
-                                    min = 1, 
-                                    max = 1000),
-                        
-                        br(),
+
                         
                         sliderInput("cement","Cement (Kg/m^3)", 17, 27, 20, 0.5),
                         sliderInput("age","Concrete Age (days)", 50, 80, 50, 0.5),
@@ -40,11 +27,11 @@ shinyUI(fluidPage(
                 # of the generated distribution
                 mainPanel(
                         tabsetPanel(type = "tabs", 
-                                    tabPanel("Prediction", plotOutput("plot")),
-                                    tabPanel("Residuals vs. Actual Strength", plotOutput("plot")), 
-                                    tabPanel("Residuals vs. Predicted Strength", verbatimTextOutput("summary")), 
-                                    tabPanel("Predicted Strength vs. Actual Strength", tableOutput("table")),
-                                    tabPanel("Variable Importance", tableOutput("table")),
+                                    tabPanel("Prediction", verbatimTextOutput("text"), plotOutput("plot")),
+                                    tabPanel("Residuals vs. Actual Strength", plotOutput("plot1")), 
+                                    tabPanel("Residuals vs. Predicted Strength", plotOutput("plot2")), 
+                                    tabPanel("Predicted Strength vs. Actual Strength", plotOutput("plot3")),
+                                    tabPanel("Variable Importance", plotOutput("plot4")),
                                     tabPanel("About Application", plotOutput("plot"))
                         )
                 )
