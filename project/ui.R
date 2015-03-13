@@ -27,12 +27,30 @@ shinyUI(fluidPage(
                 # of the generated distribution
                 mainPanel(
                         tabsetPanel(type = "tabs", 
-                                    tabPanel("Prediction", verbatimTextOutput("text"), plotOutput("plot")),
-                                    tabPanel("Residuals vs. Actual Strength", plotOutput("plot1")), 
-                                    tabPanel("Residuals vs. Predicted Strength", plotOutput("plot2")), 
-                                    tabPanel("Predicted Strength vs. Actual Strength", plotOutput("plot3")),
-                                    tabPanel("Variable Importance", plotOutput("plot4")),
-                                    tabPanel("About Application", plotOutput("plot"))
+                                    tabPanel("Prediction",
+                                             textOutput("text1"),
+                                             plotOutput("plot5")
+                                             ),
+                                    
+                                    tabPanel("Residuals vs. Actual Strength",
+                                             plotOutput("plot1")
+                                             ), 
+                                    
+                                    tabPanel("Residuals vs. Predicted Strength",
+                                             plotOutput("plot2")
+                                             ), 
+                                    
+                                    tabPanel("Predicted Strength vs. Actual Strength",
+                                             plotOutput("plot3")
+                                             ),
+                                    
+                                    tabPanel("Variable Importance",
+                                             plotOutput("plot4")
+                                             ),
+                                    
+                                    tabPanel("About Application",
+                                             textOutput("text2")
+                                             )
                         )
                 )
         )
