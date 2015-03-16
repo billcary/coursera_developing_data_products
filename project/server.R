@@ -1,7 +1,5 @@
 library(shiny)
 suppressMessages(library(fmsb))          # Radar/spider plotting
-suppressMessages(library(caret))         # Machine learning
-suppressMessages(library(AppliedPredictiveModeling)) # Concrete data set
 suppressMessages(library(randomForest))  # Machine learning
 
 
@@ -52,10 +50,9 @@ shinyServer(function(input, output) {
         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ## Holdout 20% of data for testing estimates
         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        smp_size <- floor(0.80 * nrow(concrete))
         set.seed(107)
-        inTrain <- createDataPartition(y = concrete$CompressiveStrength,
-                                       p = 0.80,
-                                       list = FALSE)
+        inTrain <- sample(seq_len(nrow(concrete)), size = smp_size)
         
         training <- concrete[inTrain,]
         testing <- concrete[-inTrain,]
