@@ -20,26 +20,26 @@ shinyServer(function(input, output) {
         
         data <- concrete
         
-        ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ## Determine min/max for each column
-        ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        output$cement.min <- min(concrete$Cement)
-        output$blast.furnace.slag.min <- min(concrete$BlastFurnaceSlag)
-        output$fly.ash.min <- min(concrete$FlyAsh)
-        output$water.min <- min(concrete$Water)
-        output$super.plasticizer.min <- min(concrete$Superplasticizer)
-        output$course.aggregate.min <- min(concrete$CoarseAggregate)
-        output$fine.aggregate.min <- min(concrete$FineAggregate)
-        output$age.min <- min(concrete$Age)
-        
-        output$cement.max <- max(concrete$Cement)
-        output$blast.furnace.slag.max <- max(concrete$BlastFurnaceSlag)
-        output$fly.ash.max <- max(concrete$FlyAsh)
-        output$water.max <- max(concrete$Water)
-        output$super.plasticizer.max <- max(concrete$Superplasticizer)
-        output$course.aggregate.max <- max(concrete$CoarseAggregate)
-        output$fine.aggregate.max <- max(concrete$FineAggregate)
-        output$age.max <- max(concrete$Age)
+#         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#         ## Determine min/max for each column
+#         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#         output$cement.min <- renderText({min(concrete$Cement)})
+#         output$blast.furnace.slag.min <- renderText({min(concrete$BlastFurnaceSlag)})
+#         output$fly.ash.min <- renderText({min(concrete$FlyAsh)})
+#         output$water.min <- renderText({min(concrete$Water)})
+#         output$super.plasticizer.min <- renderText({min(concrete$Superplasticizer)})
+#         output$course.aggregate.min <- renderText({min(concrete$CoarseAggregate)})
+#         output$fine.aggregate.min <- renderText({min(concrete$FineAggregate)})
+#         output$age.min <- renderText({min(concrete$Age)})
+#         
+#         output$cement.max <- renderText({max(concrete$Cement)})
+#         output$blast.furnace.slag.max <- renderText({max(concrete$BlastFurnaceSlag)})
+#         output$fly.ash.max <- renderText({max(concrete$FlyAsh)})
+#         output$water.max <- renderText({max(concrete$Water)})
+#         output$super.plasticizer.max <- renderText({max(concrete$Superplasticizer)})
+#         output$course.aggregate.max <- renderText({max(concrete$CoarseAggregate)})
+#         output$fine.aggregate.max <- renderText({max(concrete$FineAggregate)})
+#         output$age.max <- renderText({max(concrete$Age)})
         
         
         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,13 +77,13 @@ shinyServer(function(input, output) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Provide initial values for the user input sliders
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        sample.data <- data.frame(Cement = 293.0,
-                                  BlastFurnaceSlag = 6.5,
-                                  FlyAsh = 94.0,
+        sample.data <- data.frame(Cement = 200.0,
+                                  BlastFurnaceSlag = 150.0,
+                                  FlyAsh = 100.0,
                                   Water = 200.0,
-                                  Superplasticizer = 16.1,
-                                  CoarseAggregate = 855.0,
-                                  FineAggregate = 800.0,
+                                  Superplasticizer = 10.0,
+                                  CoarseAggregate = 900.0,
+                                  FineAggregate = 700.0,
                                   Age = 14.0)
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +141,8 @@ shinyServer(function(input, output) {
         # inputs for prediction as row 3.  This format is 
         # required by radarchart (below) to format the plot properly.
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        plot.data <- rbind(colMaxs(as.matrix(data)),
-                           colMins(as.matrix(data)),
+        plot.data <- rbind(c(450.0, 350.0, 200.0, 245.0, 30.0, 1100.0, 950.0, 365.0),
+                           c(150.0, 150.0, 100.0, 125.0, 0.0, 800.0, 600.0, 1.0),
                            sample.data)
         
         # Render radar plot of user input values
@@ -179,14 +179,15 @@ shinyServer(function(input, output) {
         # Render output prediction and confidence interval
         output$prediction.text <- renderText({paste("Based on the chosen parameters,
                                                             the predicted compressive strength
-                                                            is ", predict.sample.int[2], ".")
+                                                            is ", round(predict.sample.int[2], 2), ".")
         })
         
         output$prediction.ci <- renderText({paste("The confidence interval
                                                           for the prediction is ",
-                                                  predict.sample.int[1],
+                                                  round(predict.sample.int[1], 2),
                                                   " to ", 
-                                                  predict.sample.int[3], ".")
+                                                  round(predict.sample.int[3], 2),
+                                                  ".")
         })
         
         # Render user input values
