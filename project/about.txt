@@ -4,6 +4,8 @@ The application predicts the compressive strength of a concrete sample based on 
 
 The application user interface provides a number of tabs.  However, only the "Prediction" tab requires user input.  The other tabs provide performance information and graphs related to the underlying random forest model upon which the application is based.  To use the application, simply select the desired concrete parameters using the sliders on the sidebar panel.  The predicted compressive strenth (and associated confidence interval) for the concrete will automatically update based on the new parameters.  In addition, the main panel will also disply the chosen parameters in both tabular and chart format.
 
+IF YOU DO NOT SEE A PREDICTION WHEN YOU FIRST OPEN THE "PREDICTION TAB," CLICK ONTO ANOTHER TAB FOR A MOMENT AND COME BACK.  IT MAY TAKE A SECOND FOR THE MODEL TO TRAIN AND DISPLAY THE INTITIAL PREDICTION THE FIRST TIME THE APP IS RUN.
+
 This application IS NOT an attempt to develop the optimal predictive model for concrete compressive strength - it is intended to demonstrate the capabilities of Shiny for the rapid deployment of web-based analytical tools.
 
 

@@ -57,7 +57,10 @@ shinyUI(fluidPage(
                 # Show a tabset that includes a plot, summary, and table view
                 # of the generated distribution
                 mainPanel(
-                        tabsetPanel(type = "tabs", 
+                        tabsetPanel(type = "tabs",
+                                    tabPanel("About Application",
+                                             pre(includeText("about.txt")
+                                             )),
                                     tabPanel("Prediction",
                                              textOutput("prediction.text"),
                                              br(),
@@ -81,11 +84,7 @@ shinyUI(fluidPage(
                                     
                                     tabPanel("Variable Importance",
                                              plotOutput("plot4")
-                                    ),
-                                    
-                                    tabPanel("About Application",
-                                             pre(includeText("about.txt")
-                                             ))
+                                    )
                         )
                 )
         )
