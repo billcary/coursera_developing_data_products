@@ -16,9 +16,16 @@ shinyServer(function(input, output) {
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Read the data into R
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        data("concrete")
-        
-        data <- concrete
+        concrete <- read.csv('concrete_data.csv')
+        colnames(concrete) <- c('Cement',
+                                'BlastFurnaceSlag',
+                                'FlyAsh',
+                                'Water',
+                                'Superplasticizer',
+                                'CoarseAggregate',
+                                'FineAggregate',
+                                'Age',
+                                'CompressiveStrength')
         
 #         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #         ## Determine min/max for each column
@@ -184,15 +191,15 @@ shinyServer(function(input, output) {
         # Render output prediction and confidence interval
         output$prediction.text <- renderText({paste("Based on the chosen parameters,
                                                             the predicted compressive strength
-                                                            is ", round(predict.sample.int()[2], 2), "KPa.")
+                                                            is ", round(predict.sample.int()[2], 2), "MPa.")
         })
         
         output$prediction.ci <- renderText({paste("The confidence interval
                                                           for the prediction is ",
                                                   round(predict.sample.int()[1], 2),
-                                                  "KPa to ", 
+                                                  "MPa to ", 
                                                   round(predict.sample.int()[3], 2),
-                                                  "KPa.")
+                                                  "MPa.")
         })
         
         # Render user input values
