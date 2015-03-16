@@ -25,28 +25,6 @@ shinyServer(function(input, output) {
                                 'Age',
                                 'CompressiveStrength')
         
-#         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         ## Determine min/max for each column
-#         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         output$cement.min <- renderText({min(concrete$Cement)})
-#         output$blast.furnace.slag.min <- renderText({min(concrete$BlastFurnaceSlag)})
-#         output$fly.ash.min <- renderText({min(concrete$FlyAsh)})
-#         output$water.min <- renderText({min(concrete$Water)})
-#         output$super.plasticizer.min <- renderText({min(concrete$Superplasticizer)})
-#         output$course.aggregate.min <- renderText({min(concrete$CoarseAggregate)})
-#         output$fine.aggregate.min <- renderText({min(concrete$FineAggregate)})
-#         output$age.min <- renderText({min(concrete$Age)})
-#         
-#         output$cement.max <- renderText({max(concrete$Cement)})
-#         output$blast.furnace.slag.max <- renderText({max(concrete$BlastFurnaceSlag)})
-#         output$fly.ash.max <- renderText({max(concrete$FlyAsh)})
-#         output$water.max <- renderText({max(concrete$Water)})
-#         output$super.plasticizer.max <- renderText({max(concrete$Superplasticizer)})
-#         output$course.aggregate.max <- renderText({max(concrete$CoarseAggregate)})
-#         output$fine.aggregate.max <- renderText({max(concrete$FineAggregate)})
-#         output$age.max <- renderText({max(concrete$Age)})
-        
-        
         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ## Holdout 20% of data for testing estimates
         ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
