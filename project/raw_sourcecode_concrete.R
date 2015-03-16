@@ -150,3 +150,13 @@ radarchart(plot.data,
            plty = c(7),
            cglcol = 'red',
            title = 'Current Concrete Composition Selection')
+
+
+test <- data.frame(Cement = 200.0,
+                   BlastFurnaceSlag = 150.0,
+                   FlyAsh = 100.0,
+                   Water = 200.0,
+                   Superplasticizer = 10.0,
+                   CoarseAggregate = 900.0,
+                   FineAggregate = 700.0,
+                   Age = 14.0)

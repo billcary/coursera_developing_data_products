@@ -1,0 +1,14 @@
+This application is designed to showcase the use of Shiny to deploy a simple r predictive model to a user who does not posess r coding skills.
+
+The application predicts the compressive strength of a concrete sample based on parameters entered by the user using a series of sliders contained in the user interface.  The underlying model was developed utilizing a Random Forest algorithm (r: randomForest library), trained against the concrete dataset provided by the UCI Machine Learning Repository.  Citations are included below.
+
+The application user interface provides a number of tabs.  However, only the "Prediction" tab requires user input.  The other tabs provide performance information and graphs related to the underlying random forest model upon which the application is based.  To use the application, simply select the desired concrete parameters using the sliders on the sidebar panel.  The predicted compressive strenth (and associated confidence interval) for the concrete will automatically update based on the new parameters.  In addition, the main panel will also disply the chosen parameters in both tabular and chart format.
+
+This application IS NOT an attempt to develop the optimal predictive model for concrete compressive strength - it is intended to demonstrate the capabilities of Shiny for the rapid deployment of web-based analytical tools.
+
+
+Citations
+------------
+I-Cheng Yeh, "Modeling of strength of high performance concrete using artificial neural networks," Cement and Concrete Research, Vol. 28, No. 12, pp. 1797-1808 (1998). 
+
+Data Set: https://archive.ics.uci.edu/ml/datasets/Concrete+Compressive+Strength

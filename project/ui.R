@@ -60,29 +60,32 @@ shinyUI(fluidPage(
                         tabsetPanel(type = "tabs", 
                                     tabPanel("Prediction",
                                              textOutput("prediction.text"),
+                                             br(),
                                              textOutput("prediction.ci"),
-                                             plotOutput("plot5")
-                                             ),
+                                             br(),
+                                             column(4,tableOutput("input.vals")),
+                                             column(4, plotOutput("plot5"))
+                                    ),
                                     
                                     tabPanel("Residuals vs. Actual Strength",
                                              plotOutput("plot1")
-                                             ), 
+                                    ), 
                                     
                                     tabPanel("Residuals vs. Predicted Strength",
                                              plotOutput("plot2")
-                                             ), 
+                                    ), 
                                     
                                     tabPanel("Predicted Strength vs. Actual Strength",
                                              plotOutput("plot3")
-                                             ),
+                                    ),
                                     
                                     tabPanel("Variable Importance",
                                              plotOutput("plot4")
-                                             ),
+                                    ),
                                     
                                     tabPanel("About Application",
-                                             textOutput("text2")
-                                             )
+                                             pre(includeText("about.txt")
+                                             ))
                         )
                 )
         )

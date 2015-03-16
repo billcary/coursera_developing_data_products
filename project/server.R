@@ -110,8 +110,6 @@ shinyServer(function(input, output) {
                 varImpPlot(model.rf, type = 1, scale = TRUE)
         })
         
-        output$text1 <- renderText({sample.data$Cement})
-        
         output$text2 <- renderText({'text2'})
         
         
@@ -124,14 +122,15 @@ shinyServer(function(input, output) {
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # Predict compressive strength using example parameters
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                sample.data <- data.frame(Cement = {input$cement},
-                                          BlastFurnaceSlag = {input$blast.furnace.slag},
-                                          FlyAsh = {input$fly.ash},
-                                          Water = {input$water},
-                                          Superplasticizer = {input$super.plasticizer},
-                                          CoarseAggregate = {input$coarse.aggregate},
-                                          FineAggregate = {input$fine.aggregate},
-                                          Age = {input$age})
+                data.frame(Cement = input$cement,
+                           BlastFurnaceSlag = input$blast.furnace.slag,
+                           FlyAsh = input$fly.ash,
+                           Water = input$water,
+                           Superplasticizer = input$super.plasticizer,
+                           CoarseAggregate = input$coarse.aggregate,
+                           FineAggregate = input$fine.aggregate,
+                           Age = input$age,
+                           stringsAsFactors = FALSE)
         })
         
         
@@ -141,36 +140,42 @@ shinyServer(function(input, output) {
         # inputs for prediction as row 3.  This format is 
         # required by radarchart (below) to format the plot properly.
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        plot.data <- rbind(c(450.0, 350.0, 200.0, 245.0, 30.0, 1100.0, 950.0, 365.0),
-                           c(150.0, 150.0, 100.0, 125.0, 0.0, 800.0, 600.0, 1.0),
-                           sample.data)
+        plot.data <- reactive({
+                rbind(c(450.0, 350.0, 200.0, 245.0, 30.0, 1100.0, 950.0, 365.0),
+                      c(150.0, 150.0, 100.0, 125.0, 0.0, 800.0, 600.0, 1.0),
+                      get.input.data())
+        })
         
         # Render radar plot of user input values
         output$plot5 <- renderPlot({
-                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                # Plot the user-input values on a radar chart.
-                #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                radarchart(plot.data,
-                           maxmin = TRUE,
-                           centerzero = TRUE,
-                           pfcol = c(5),
-                           pcol = c(4),
-                           pty = c(16),
-                           plty = c(7),
-                           cglcol = 'red',
-                           title = 'Current Concrete Composition Selection')
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        # Plot the user-input values on a radar chart.
+                        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        radarchart(plot.data(),
+                                   maxmin = TRUE,
+                                   centerzero = TRUE,
+                                   pfcol = c(5),
+                                   pcol = c(4),
+                                   pty = c(16),
+                                   plty = c(7),
+                                   cglcol = 'red',
+                                   title = 'Current Concrete Composition Selection')
         })
         
-        predict.sample <- predict(model.rf, sample.data, predict.all = TRUE)
+        predict.sample <- reactive({
+                predict(model.rf, get.input.data(), predict.all = TRUE)
+        })
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # Calculate the 95% confidence interval for the prediction based
         # on the user's input values.
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        predict.sample.int <- apply( predict.sample$individual, 1, function(x) {
+        predict.sample.int <- reactive({
+                apply( predict.sample()$individual, 1, function(x) {
                 c( quantile(x, c(0.025)),
                    mean(x),
                    quantile(x, c(0.975)) )
+                })
         })
         
         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -179,21 +184,20 @@ shinyServer(function(input, output) {
         # Render output prediction and confidence interval
         output$prediction.text <- renderText({paste("Based on the chosen parameters,
                                                             the predicted compressive strength
-                                                            is ", round(predict.sample.int[2], 2), ".")
+                                                            is ", round(predict.sample.int()[2], 2), "KPa.")
         })
         
         output$prediction.ci <- renderText({paste("The confidence interval
                                                           for the prediction is ",
-                                                  round(predict.sample.int[1], 2),
-                                                  " to ", 
-                                                  round(predict.sample.int[3], 2),
-                                                  ".")
+                                                  round(predict.sample.int()[1], 2),
+                                                  "KPa to ", 
+                                                  round(predict.sample.int()[3], 2),
+                                                  "KPa.")
         })
         
         # Render user input values
-        output$input.vals <- renderText({paste("The selected input 
-                                                       values are as follows: ",
-                                               sample)
+        output$input.vals <- renderTable({
+                t(get.input.data())
         })
         
 })
